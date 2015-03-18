@@ -209,30 +209,17 @@ public class SwaggerReaderImpl implements SwaggerReader {
 
         for (SwaggerParser apiNode : parser.getChildren(constants.APIS)) {
             String apiPath = apiNode.getString(constants.PATH);
+            Api api = apiDeclaration.addApi(apiPath);
+            api.setDescription(apiNode.getString(constants.DESCRIPTION));
 
-            if( apiDeclaration.getApi( apiPath ) != null )
-            {
-                logger.log( Level.INFO, "Skipping duplicate API at path [" + apiPath +
-                        "] in ApiDeclaration at [" + basePath + resourcePath + "]");
-            }
-            else
-            {
-                Api api = apiDeclaration.addApi(apiPath);
-                api.setDescription(apiNode.getString(constants.DESCRIPTION));
-
-                for( SwaggerParser opNode : apiNode.getChildren( constants.OPERATIONS ))
-                {
-                    String nickName = opNode.getString(constants.NICKNAME);
-                    if( api.getOperation(nickName ) != null )
-                    {
-                        logger.log( Level.INFO, "Skipping duplicate Operation with nickName [" +
-                                nickName + "] in API at path [" + apiPath +
-                                "] in ApiDeclaration at [" + basePath + resourcePath + "]");
-                    }
-                    else
-                    {
-                        readOperation(constants, api, opNode, nickName);
-                    }
+            for (SwaggerParser opNode : apiNode.getChildren(constants.OPERATIONS)) {
+                String nickName = opNode.getString(constants.NICKNAME);
+                if (api.getOperation(nickName) != null) {
+                    logger.log(Level.INFO, "Skipping duplicate Operation with nickName [" +
+                            nickName + "] in API at path [" + apiPath +
+                            "] in ApiDeclaration at [" + basePath + resourcePath + "]");
+                } else {
+                    readOperation(constants, api, opNode, nickName);
                 }
             }
         }
